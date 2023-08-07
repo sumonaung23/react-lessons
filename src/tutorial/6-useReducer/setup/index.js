@@ -19,6 +19,19 @@ const reducer = (state, action) => {
         modalContent: 'please enter value'
       };
     }
+    if(action.type === 'CLOSE_MODAL') {
+      return {
+        ...state,
+        isModalOpen: false
+      }
+    }
+    if(action.type === 'REMOVE_ITEM') {
+      const newPeople = state.people.filter((person) => person.id !== action.payLoad);
+      return {
+        ...state,
+        people: newPeople
+      };
+    }
 
   // if none of them matches, throw the error
   throw new Error('no matching action type');
@@ -44,9 +57,13 @@ const Index = () => {
     }
   }
 
+  const closeModal = () => {
+    dispatch({type: 'CLOSE_MODAL'});
+  }
+
   return (
     <>
-      {state.isModalOpen && <Modal modalContent={state.modalContent} />}
+      {state.isModalOpen && <Modal closeModal={closeModal} modalContent={state.modalContent} />}
       <form onSubmit={handleSubmit} className='form'>
         <div>
           <input type="text" 
@@ -57,8 +74,9 @@ const Index = () => {
       </form>
       {state.people.map((person) => {
         return (
-          <div key={person.id}>
+          <div key={person.id} className='item'>
             <h4>{person.name}</h4>
+            <button onClick={() => dispatch({type:'REMOVE_ITEM', payLoad:person.id})}>remove</button>
           </div>
         )
       } )}
